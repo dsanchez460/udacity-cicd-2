@@ -208,24 +208,34 @@ jobs:
 #          template: basic_fail_1
       # Here's where you will add some code to rollback on failure
 
-  #configure-infrastructure:
-    #docker:
-      ## Docker image here that supports Ansible
-    #steps:
-      ## Checkout code from git
-      ## Add ssh keys with fingerprint
-      ## attach workspace
-      #- run:
-          #name: Install dependencies
-          #command: |
-            ## Your code here
-            #exit 1
-      #- run:
-          #name: Configure server
-          #command: |
-            ## Your code here
-            #exit 1
-      ## Here's where you will add some code to rollback on failure
+  configure-infrastructure:
+    docker:
+      # Docker image here that supports Ansible
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+      # Add ssh keys with fingerprint
+      - add_ssh_keys:
+          fingerprints: ["53:ed:0d:b2:e2:aa:fa:ec:8b:bd:af:c4:d6:6e:f8:d8"]
+      # attach workspace
+      - attach_workspace:
+          at: .circleci/ansible/inventory.txt
+      - run:
+          name: Install dependencies
+          command: |
+            # Your code here
+            apk add --update ansible
+            apk add tar
+            apk add gzip
+            pip install awscli
+      - run:
+          name: Configure server
+          command: |
+            # Your code here
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
+      # Here's where you will add some code to rollback on failure
 
   #run-migrations:
     #docker:
@@ -358,8 +368,8 @@ workflows:
           filters:
             branches:
               only: [master]
-      #- configure-infrastructure:
-          #requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
       #- run-migrations:
           #requires: [configure-infrastructure]
       #- deploy-frontend:

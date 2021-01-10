@@ -173,7 +173,7 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - run: sudo apt-get install -y tar # required to persist to workspace
+      - run: yum -y install tar gzip # required to persist to workspace
       - run:
           name: Ensure back-end infrastructure exists
           command: |

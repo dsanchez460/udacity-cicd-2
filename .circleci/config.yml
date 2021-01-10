@@ -198,9 +198,9 @@ jobs:
             --filters "Name=tag:Project,Values=udacity" \
             --output text >> inventory
       - persist_to_workspace:
-          root: ~/
+          root: .circleci/ansible
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - inventory.txt
 
 #      - slack/notify:
 #          event: fail
@@ -220,7 +220,7 @@ jobs:
           fingerprints: ["53:ed:0d:b2:e2:aa:fa:ec:8b:bd:af:c4:d6:6e:f8:d8"]
       # attach workspace
       - attach_workspace:
-          at: .circleci/ansible/inventory.txt
+          at: /tmp/.circleci/ansible
       - run:
           name: Install dependencies
           command: |
@@ -233,8 +233,9 @@ jobs:
           name: Configure server
           command: |
             # Your code here
-            cd .circleci/ansible
-            ansible-playbook -i inventory.txt configure-server.yml
+            #cd .circleci/ansible
+            #ansible-playbook -i inventory.txt configure-server.yml
+            ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
       # Here's where you will add some code to rollback on failure
 
   #run-migrations:

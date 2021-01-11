@@ -240,22 +240,27 @@ jobs:
           template: basic_fail_1
       # Here's where you will add some code to rollback on failure
 
-  #run-migrations:
-    #docker:
-      ## Docker image here that supports NodeJS
-    #steps:
-      ## Checkout code from git
-      #- run:
-          #name: Run migrations
-          #command: |
-            ## Your code here
-            #exit 1
-      #- run:
-          #name: Send migration results to memstash
-          #command: |
-            ## Your code here
-            #exit 1
-     ## Here's where you will add some code to rollback on failure
+  run-migrations:
+    docker:
+      # Docker image here that supports NodeJS
+      - image: circleci/node:13.8.0
+    steps:
+      # Checkout code from git
+      - run:
+          name: Run migrations
+          command: |
+            # Your code here
+            cd backend
+            npm install
+            npm run migrations >> migrations_log.txt
+      - run:
+          name: Send migration results to memstash
+          command: |
+            # Your code here
+            if grep "has been executed successfully" migrations_log.txt;
+            then curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}; \
+            fi
+     # Here's where you will add some code to rollback on failure
 
   #deploy-frontend:
     #docker:
@@ -373,8 +378,8 @@ workflows:
               only: [master]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
-      #- run-migrations:
-          #requires: [configure-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
       #- deploy-frontend:
           #requires: [run-migrations]
       #- deploy-backend:

@@ -201,12 +201,11 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-
-#      - slack/notify:
-#          event: fail
-#          mentions: '@ignacio.paricio'
-#          template: basic_fail_1
-      # Here's where you will add some code to rollback on failure
+      - slack/notify:
+          event: fail
+          mentions: '@ignacio.paricio'
+          template: basic_fail_1
+       Here's where you will add some code to rollback on failure
 
   configure-infrastructure:
     docker:
@@ -235,6 +234,10 @@ jobs:
             # Your code here
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
+      - slack/notify:
+          event: fail
+          mentions: '@ignacio.paricio'
+          template: basic_fail_1
       # Here's where you will add some code to rollback on failure
 
   #run-migrations:

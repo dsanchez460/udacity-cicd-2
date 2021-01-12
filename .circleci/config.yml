@@ -196,7 +196,8 @@ jobs:
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Project,Values=udacity" \
-            --output text >> inventory
+            --output text >> inventory.txt
+            cat inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
@@ -230,6 +231,7 @@ jobs:
             pip install awscli
       - run:
           name: Configure server
+          no_output_timeout: 15m
           command: |
             # Your code here
             echo ENVIRONMENT=production > backend/.env

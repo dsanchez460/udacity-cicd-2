@@ -13,13 +13,13 @@ commands:
           when: on_fail
           command: |
             # Your code here
-            # Force removal of S3 buckets, even if it's not empty
-            # (see https://docs.aws.amazon.com/AmazonS3/latest/dev/delete-or-empty-bucket.html)
-            aws s3 rb s3://udapeople-<< parameters.workflow_id >> --force
-
             # Delete front- and back-end stacks
             aws cloudformation delete-stack --stack-name frontend-<< parameters.workflow_id >>
             aws cloudformation delete-stack --stack-name backend-<< parameters.workflow_id >>
+
+            # Force removal of S3 buckets, even if it's not empty
+            # (see https://docs.aws.amazon.com/AmazonS3/latest/dev/delete-or-empty-bucket.html)
+            aws s3 rb s3://udapeople-<< parameters.workflow_id >> --force
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -204,13 +204,11 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Project,Values=udacity" \
             --output text > .circleci/ansible/inventory.txt
-#            pwd
-#            ls
-#            cat inventory.txt
       - persist_to_workspace:
-          root: ~/
+          #root: ~/
+          root: /root/project
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - .circleci/ansible/inventory.txt
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID}
       - slack/notify:

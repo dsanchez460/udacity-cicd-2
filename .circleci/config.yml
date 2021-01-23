@@ -203,18 +203,14 @@ jobs:
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Project,Values=udacity" \
-            --output text > inventory.txt
+            --output text > .circleci/ansible/inventory.txt
             pwd
             ls
             cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
-          root: ~/
+          root: .circleci/ansible
           paths:
             - inventory.txt
-
-#          root: .circleci/ansible
-#          paths:
-#            - inventory.txt
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID}
       - slack/notify:
@@ -243,14 +239,13 @@ jobs:
             pip install awscli
       # attach workspace
       - attach_workspace:
-          at: ~/
+          at: /tmp/.circleci/ansible
       - run:
           name: Configure server
           no_output_timeout: 15m
           command: |
             # Your code here
-            #cd .circleci/ansible
-            ansible-playbook -i inventory.txt .circleci/ansible/configure-server.yml
+            ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
 #            echo ENVIRONMENT=production > backend/.env
 #            echo NODE_ENV=production >> backend/.env
 #            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> backend/.env
@@ -308,12 +303,12 @@ jobs:
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
             yum -y install nodejs
       - attach_workspace:
-          at: ~/
+          at: /tmp/.circleci/ansible
       - run:
           name: Get backend url # was stored in inventory.txt in deploy-infrastructure
           command: |
             # your code here
-            BACKEND_IP=`head -1 inventory.txt`
+            BACKEND_IP=`head -1 /tmp/.circleci/ansible/inventory.txt`
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
       - run:
@@ -355,13 +350,12 @@ jobs:
             pip install awscli
       # attach workspace
       - attach_workspace:
-          at: ~/
+          at: /tmp/.circleci/ansible
       - run:
           name: Deploy backend
           command: |
             # your code here
-#            cd .circleci/ansible
-            ansible-playbook -i inventory.txt .circleci/ansible/deploy-backend.yml
+            ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID}
@@ -381,12 +375,12 @@ jobs:
             apk add tar gzip curl
             pip install awscli
       - attach_workspace:
-          at: ~/
+          at: /tmp/.circleci/ansible
       - run:
           name: Get backend url
           command: |
             # your code here
-            BACKEND_IP=`head -1 .circleci/ansible/inventory.txt`
+            BACKEND_IP=`head -1 /tmp/.circleci/ansible/inventory.txt`
       - run:
           name: Backend smoke test.
           command: |

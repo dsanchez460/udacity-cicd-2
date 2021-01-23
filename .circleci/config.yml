@@ -284,14 +284,14 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - attach_workspace:
-          at: ~/
       - run:
           name: Install dependencies
           command: |
             # your code here
             yum -y install nodejs
             yum -y install tar gzip
+      - attach_workspace:
+          at: ~/
       - run:
           name: Get backend url # was stored in inventory.txt in deploy-infrastructure
           command: |

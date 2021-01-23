@@ -370,7 +370,8 @@ jobs:
           name: Backend smoke test.
           command: |
             # your code here
-            curl "https://${BACKEND_IP}:3030/api/status"
+            echo "http://${BACKEND_IP}:3030/api/status"
+            curl "http://${BACKEND_IP}:3030/api/status"
       - run:
           name: Frontend smoke test.
           command: |

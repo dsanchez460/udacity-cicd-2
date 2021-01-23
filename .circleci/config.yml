@@ -204,6 +204,9 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Project,Values=udacity" \
             --output text > .circleci/ansible/inventory.txt
+            pwd
+            ls
+            cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
           #root: ~/
           root: /root/project

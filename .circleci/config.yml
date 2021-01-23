@@ -218,9 +218,6 @@ jobs:
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["53:ed:0d:b2:e2:aa:fa:ec:8b:bd:af:c4:d6:6e:f8:d8"]
-      # attach workspace
-      - attach_workspace:
-          at: ~/
       - run:
           name: Install dependencies
           command: |
@@ -229,6 +226,9 @@ jobs:
             apk add tar
             apk add gzip
             pip install awscli
+      # attach workspace
+      - attach_workspace:
+          at: ~/
       - run:
           name: Configure server
           no_output_timeout: 15m

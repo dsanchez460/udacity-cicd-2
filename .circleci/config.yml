@@ -357,7 +357,8 @@ jobs:
           name: Install dependencies
           command: |
             # your code here
-            apk add tar gzip
+            apk add tar gzip curl
+            pip install awscli
       - attach_workspace:
           at: ~/
       - run:

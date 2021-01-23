@@ -288,16 +288,16 @@ jobs:
           name: Install dependencies
           command: |
             # your code here
+            yum -y install tar gzip
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
             yum -y install nodejs
-            yum -y install tar gzip
       - attach_workspace:
           at: ~/
       - run:
           name: Get backend url # was stored in inventory.txt in deploy-infrastructure
           command: |
             # your code here
-            BACKEND_IP=`head -1 inventory.txt`
+            BACKEND_IP=`head -1 .circleci/ansible/inventory.txt`
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
       - run:

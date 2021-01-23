@@ -203,15 +203,18 @@ jobs:
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Project,Values=udacity" \
-            --output text > .circleci/ansible/inventory.txt
+            --output text > inventory.txt
             pwd
             ls
             cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
-          #root: ~/
-          root: /root/project
+          root: ~/
           paths:
-            - .circleci/ansible/inventory.txt
+            - inventory.txt
+
+#          root: .circleci/ansible
+#          paths:
+#            - inventory.txt
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID}
       - slack/notify:
@@ -246,8 +249,8 @@ jobs:
           no_output_timeout: 15m
           command: |
             # Your code here
-            cd .circleci/ansible
-            ansible-playbook -i inventory.txt configure-server.yml
+            #cd .circleci/ansible
+            ansible-playbook -i inventory.txt .circleci/ansible/configure-server.yml
 #            echo ENVIRONMENT=production > backend/.env
 #            echo NODE_ENV=production >> backend/.env
 #            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> backend/.env
@@ -310,7 +313,7 @@ jobs:
           name: Get backend url # was stored in inventory.txt in deploy-infrastructure
           command: |
             # your code here
-            BACKEND_IP=`head -1 .circleci/ansible/inventory.txt`
+            BACKEND_IP=`head -1 inventory.txt`
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
       - run:
@@ -357,8 +360,8 @@ jobs:
           name: Deploy backend
           command: |
             # your code here
-            cd .circleci/ansible
-            ansible-playbook -i inventory.txt deploy-backend.yml
+#            cd .circleci/ansible
+            ansible-playbook -i inventory.txt .circleci/ansible/deploy-backend.yml
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID}

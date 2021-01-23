@@ -234,17 +234,17 @@ jobs:
           no_output_timeout: 15m
           command: |
             # Your code here
-            echo ENVIRONMENT=production > backend/.env
-            echo NODE_ENV=production >> backend/.env
-            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> backend/.env
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> backend/.env
-            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> backend/.env
-            echo TYPEORM_HOST=$TYPEORM_HOST >> backend/.env
-            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> backend/.env
-            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> backend/.env
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> backend/.env
-            echo TYPEORM_PORT=$TYPEORM_PORT >> backend/.env
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> backend/.env
+#            echo ENVIRONMENT=production > backend/.env
+#            echo NODE_ENV=production >> backend/.env
+#            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> backend/.env
+#            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> backend/.env
+#            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> backend/.env
+#            echo TYPEORM_HOST=$TYPEORM_HOST >> backend/.env
+#            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> backend/.env
+#            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> backend/.env
+#            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> backend/.env
+#            echo TYPEORM_PORT=$TYPEORM_PORT >> backend/.env
+#            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> backend/.env
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
       - slack/notify:
@@ -260,19 +260,6 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - run:
-          name: Test env variables
-          command: |
-            echo ENVIRONMENT=production
-            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE
-            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES
-            echo TYPEORM_HOST=$TYPEORM_HOST
-            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS
-            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD
-            echo TYPEORM_PORT=$TYPEORM_PORT
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME
       - run:
           name: Run migrations
           command: |
@@ -388,18 +375,18 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
+#      - build-frontend
+#      - build-backend
+#      - test-frontend:
+#          requires: [build-frontend]
+#      - test-backend:
+#          requires: [build-backend]
+#      - scan-backend:
+#          requires: [build-backend]
+#      - scan-frontend:
+#          requires: [build-frontend]
       - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          #requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [master]

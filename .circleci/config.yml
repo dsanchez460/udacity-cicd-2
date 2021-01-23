@@ -234,6 +234,8 @@ jobs:
           no_output_timeout: 15m
           command: |
             # Your code here
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
 #            echo ENVIRONMENT=production > backend/.env
 #            echo NODE_ENV=production >> backend/.env
 #            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> backend/.env
@@ -245,8 +247,7 @@ jobs:
 #            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> backend/.env
 #            echo TYPEORM_PORT=$TYPEORM_PORT >> backend/.env
 #            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> backend/.env
-            cd .circleci/ansible
-            ansible-playbook -i inventory.txt configure-server.yml
+
       - slack/notify:
           event: fail
           mentions: '@ignacio.paricio'

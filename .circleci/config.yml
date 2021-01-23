@@ -4,18 +4,26 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      # Add parameter here   
+      # Add parameter here
+      workflow_id:
+        type: string
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
             # Your code here
-            exit 1
+            # Force removal of S3 buckets, even if it's not empty
+            # (see https://docs.aws.amazon.com/AmazonS3/latest/dev/delete-or-empty-bucket.html)
+            aws s3 rb s3://udapeople-<< parameters.workflow_id >> --force
+
+            # Delete front- and back-end stacks
+            aws cloudformation delete-stack --stack-name frontend-<< parameters.workflow_id >>
+            aws cloudformation delete-stack --stack-name backend-<< parameters.workflow_id >>
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
-    parameters:
+    #parameters:
       # Add parameter here     
     steps:
       - run:
@@ -23,13 +31,12 @@ commands:
           # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
-            if(( $SUCCESS==1 )); 
+            SUCCESS=`curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}`
+            if(( ${SUCCESS}==1 ));
             then
-            # cd ~/project/backend
-            # npm install
-            # Add revert code here. You can find this in the Getting Started section.
-              exit 1
+              cd backend
+              npm install
+              npm run migrations:revert
             fi
 
 orbs:
@@ -202,6 +209,8 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID}
       - slack/notify:
           event: fail
           mentions: '@ignacio.paricio'
@@ -276,7 +285,7 @@ jobs:
             then curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}; \
             fi
      # Here's where you will add some code to rollback on failure
-
+      - revert-migrations
   deploy-frontend:
     docker:
       # Docker image here that supports AWS CLI
@@ -313,6 +322,9 @@ jobs:
           command: |
             aws s3 cp ./frontend/dist s3://udapeople-${CIRCLE_WORKFLOW_ID}/ --recursive
       # Here's where you will add some code to rollback on failure
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID}
+      - revert-migrations
                     
   deploy-backend:
     docker:
@@ -345,6 +357,9 @@ jobs:
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID}
+      - revert-migrations
 
   smoke-test:
     docker:
@@ -370,7 +385,6 @@ jobs:
           name: Backend smoke test.
           command: |
             # your code here
-            BACKEND_IP=`head -1 .circleci/ansible/inventory.txt`
             echo "BACKEND_IP: ${BACKEND_IP}"
             curl "http://${BACKEND_IP}:3030/api/status"
       - run:
@@ -385,6 +399,9 @@ jobs:
             return 0
             fi
       # Here's where you will add some code to rollback on failure
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID}
+      - revert-migrations
 
   #cloudfront-update:
     #docker:
@@ -400,6 +417,9 @@ jobs:
           #command: |
             ## your code here
       ## Here's where you will add some code to rollback on failure
+#      - destroy-environment:
+#          workflow_id: ${CIRCLE_WORKFLOW_ID}
+#      - revert-migrations
 
 #cleanup:
     #docker:

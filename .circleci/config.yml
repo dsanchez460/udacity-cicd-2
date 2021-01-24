@@ -204,14 +204,18 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Project,Values=udacity" \
             --output text > .circleci/ansible/inventory.txt
-
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Project,Values=udacity" \
             --output text > inventory.txt
-
             pwd
+            pwd .circleci/ansible
+            pwd ~
             ls
+            BACKEND_IP_1=`head -1 /tmp/.circleci/ansible/inventory.txt`
+            echo "BACKEND_IP_1: ${BACKEND_IP_1}"
+            BACKEND_IP_2=`head -1 inventory.txt`
+            echo "BACKEND_IP_1: ${BACKEND_IP_2}"
       - persist_to_workspace:
           root: .circleci/ansible
           paths:

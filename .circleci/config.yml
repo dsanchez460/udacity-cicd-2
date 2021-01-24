@@ -212,7 +212,7 @@ jobs:
             pwd .circleci/ansible
             pwd ~
             ls
-            BACKEND_IP_1=`head -1 /tmp/.circleci/ansible/inventory.txt`
+            BACKEND_IP_1=`head -1 .circleci/ansible/inventory.txt`
             echo "BACKEND_IP_1: ${BACKEND_IP_1}"
             BACKEND_IP_2=`head -1 inventory.txt`
             echo "BACKEND_IP_1: ${BACKEND_IP_2}"

@@ -266,12 +266,15 @@ jobs:
             # Your code here
             cd backend
             npm install
+            npm run build
+            touch migrations_log.txt
             npm run migrations >> migrations_log.txt
             cat migrations_log.txt
       - run:
           name: Send migration results to memstash
           command: |
             # Your code here
+            echo ${CIRCLE_WORKFLOW_ID}
             if grep "has been executed successfully" migrations_log.txt;
             then curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}; \
             fi
@@ -300,6 +303,7 @@ jobs:
           command: |
             # your code here
             BACKEND_IP=`cat .circleci/ansible/inventory.txt | head -2 | tail -1`
+            echo "BACKEND_IP: ${BACKEND_IP}"
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}" >> "frontend/.env"
       - run:
@@ -371,16 +375,11 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Get backend url
+          name: Get backend url and backend smoke test.
           command: |
             # your code here
             BACKEND_IP=`cat .circleci/ansible/inventory.txt | head -2 | tail -1`
-            echo "BACKEND_IP: ${BACKEND_IP}"
-      - run:
-          name: Backend smoke test.
-          command: |
-            # your code here
-            echo "BACKEND_IP: ${BACKEND_IP}"
+            echo "curl_target:http://${BACKEND_IP}:3030/api/status"
             curl "http://${BACKEND_IP}:3030/api/status"
       - run:
           name: Frontend smoke test.

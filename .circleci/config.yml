@@ -204,14 +204,8 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
             --output text >> .circleci/ansible/inventory.txt
-            BACKEND_IP_1=`head -2 .circleci/ansible/inventory.txt`
-            echo "BACKEND_IP_1: ${BACKEND_IP_1}"
-#            aws ec2 describe-instances \
-#            --query 'Reservations[*].Instances[*].PublicIpAddress' \
-#            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
-#            --output text >> inventory.txt
-#            BACKEND_IP_2=`head -2 inventory.txt`
-#            echo "BACKEND_IP_1: ${BACKEND_IP_2}"
+            BACKEND_IP=`cat .circleci/ansible/inventory.txt | head -2 | tail -1`
+            echo "BACKEND_IP: ${BACKEND_IP}"
       - persist_to_workspace:
           root: ~/
           paths:
@@ -307,7 +301,7 @@ jobs:
           name: Get backend url # was stored in inventory.txt in deploy-infrastructure
           command: |
             # your code here
-            BACKEND_IP=`head -2 .circleci/ansible/inventory.txt`
+            BACKEND_IP=`cat .circleci/ansible/inventory.txt | head -2 | tail -1`
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}" >> "frontend/.env"
       - run:
@@ -354,9 +348,9 @@ jobs:
           name: Deploy backend
           command: |
             # your code here
-            BACKEND_IP=`head -2 .circleci/ansible/inventory.txt`
-            echo "BACKEND_IP: ${BACKEND_IP}"
             cd .circleci/ansible
+            BACKEND_IP=`cat inventory.txt | head -2 | tail -1`
+            echo "BACKEND_IP: ${BACKEND_IP}"
             ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
@@ -382,7 +376,7 @@ jobs:
           name: Get backend url
           command: |
             # your code here
-            BACKEND_IP=`head -2 .circleci/ansible/inventory.txt`
+            BACKEND_IP=`cat .circleci/ansible/inventory.txt | head -2 | tail -1`
             echo "BACKEND_IP: ${BACKEND_IP}"
       - run:
           name: Backend smoke test.

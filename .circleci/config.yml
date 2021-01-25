@@ -203,15 +203,15 @@ jobs:
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
-            --output text > .circleci/ansible/inventory.txt
-            aws ec2 describe-instances \
-            --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
-            --output text > inventory.txt
-            BACKEND_IP_1=`head -1 .circleci/ansible/inventory.txt`
+            --output text >> .circleci/ansible/inventory.txt
+            BACKEND_IP_1=`head -2 .circleci/ansible/inventory.txt`
             echo "BACKEND_IP_1: ${BACKEND_IP_1}"
-            BACKEND_IP_2=`head -1 inventory.txt`
-            echo "BACKEND_IP_1: ${BACKEND_IP_2}"
+#            aws ec2 describe-instances \
+#            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+#            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
+#            --output text >> inventory.txt
+#            BACKEND_IP_2=`head -2 inventory.txt`
+#            echo "BACKEND_IP_1: ${BACKEND_IP_2}"
       - persist_to_workspace:
           root: ~/
           paths:
@@ -272,6 +272,7 @@ jobs:
             # Your code here
             cd backend
             npm install
+            npm audit fix --audit-level=critical --force
             npm run migrations >> migrations_log.txt
       - run:
           name: Send migration results to memstash
@@ -304,7 +305,7 @@ jobs:
           name: Get backend url # was stored in inventory.txt in deploy-infrastructure
           command: |
             # your code here
-            BACKEND_IP=`head -1 .circleci/ansible/inventory.txt`
+            BACKEND_IP=`head -2 .circleci/ansible/inventory.txt`
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}" >> "frontend/.env"
       - run:
@@ -351,7 +352,7 @@ jobs:
           name: Deploy backend
           command: |
             # your code here
-            BACKEND_IP=`head -1 .circleci/ansible/inventory.txt`
+            BACKEND_IP=`head -2 .circleci/ansible/inventory.txt`
             echo "BACKEND_IP: ${BACKEND_IP}"
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
@@ -379,7 +380,7 @@ jobs:
           name: Get backend url
           command: |
             # your code here
-            BACKEND_IP=`head -1 .circleci/ansible/inventory.txt`
+            BACKEND_IP=`head -2 .circleci/ansible/inventory.txt`
             echo "BACKEND_IP: ${BACKEND_IP}"
       - run:
           name: Backend smoke test.

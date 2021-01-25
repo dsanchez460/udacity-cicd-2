@@ -282,12 +282,8 @@ jobs:
           name: Send migration results to memstash
           command: |
             # Your code here
-            pwd
-            cd backend
-            pwd
-            ls
             echo "CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID}"
-            if grep "has been executed successfully" migrations_log.txt;
+            if grep "has been executed successfully" backend/migrations_log.txt;
             then curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}; \
             fi
      # Here's where you will add some code to rollback on failure
@@ -375,8 +371,6 @@ jobs:
           name: Deploy backend
           command: |
             # your code here
-            pwd
-            ls
             cd .circleci/ansible
             BACKEND_IP=`cat inventory.txt | head -2 | tail -1`
             echo "BACKEND_IP: ${BACKEND_IP}"
@@ -402,13 +396,6 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Get backend url and backend smoke test.
-          command: |
-            # your code here
-            BACKEND_IP=`cat .circleci/ansible/inventory.txt | head -2 | tail -1`
-            echo "curl_target:http://${BACKEND_IP}:3030/api/status"
-            curl "http://${BACKEND_IP}:3030/api/status"
-      - run:
           name: Frontend smoke test.
           command: |
             # your code here
@@ -419,6 +406,13 @@ jobs:
             else
             return 0
             fi
+      - run:
+          name: Get backend url and backend smoke test.
+          command: |
+            # your code here
+            BACKEND_IP=`cat .circleci/ansible/inventory.txt | head -2 | tail -1`
+            echo "curl_target:http://${BACKEND_IP}:3030/api/status"
+            curl "http://${BACKEND_IP}:3030/api/status"
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID}

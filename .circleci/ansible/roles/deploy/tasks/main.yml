@@ -1,24 +1,26 @@
-- name: Creates directory
-  file:
-    path: /home/ubuntu/backend
-    state: directory
-- name: "move backend files to server."
+---
+
+- name: Copy backend dist files to remote server
   copy:
     src: /root/project/backend
     dest: /home/ubuntu
 
-- name: "install package dependencies"
+- name: Install Node modules
   shell: |
     cd /home/ubuntu/backend
+    ls -la
+    printenv
     npm install
-- name: "build package"
+- name: building node services
   shell: |
     cd /home/ubuntu/backend
     npm run build
+    npm run prestart:prod
 - name: "run migrations again"
   shell: |
     cd /home/ubuntu/backend
     npm run migrations
+
 - name: Executing node
   become: true
   shell: |

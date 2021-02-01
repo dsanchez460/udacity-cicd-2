@@ -459,7 +459,7 @@ jobs:
             command: |
               # your code here
               export OldWorkflowID=$(aws cloudformation \
-                  list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                  list-exports --query "Exports[?Name=='WorkflowID'].Value" \
                   --region us-east-2 --no-paginate --output text)
               # Exporting stacks not required having the workflow ID
   #            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \

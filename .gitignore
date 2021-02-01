@@ -8,7 +8,7 @@ log.txt
 *.sublime-workspace
 .vscode/
 npm-debug.log*
-
+deliverables/presentation/*
 .idea/
 .ionic/
 .sourcemaps/
@@ -60,6 +60,7 @@ plugins/
 plugins/android.json
 plugins/ios.json
 $RECYCLE.BIN/
+deliverables/presentation/
 
 .DS_Store
 Thumbs.db

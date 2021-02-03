@@ -307,17 +307,14 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Get backend url # was stored in inventory.txt in deploy-infrastructure
+          name: Get backend url and deploy frontend objects
           command: |
             # your code here
             BACKEND_IP=`cat .circleci/ansible/inventory.txt | head -2 | tail -1`
-            echo "BACKEND_IP: ${BACKEND_IP}"
-            export API_URL="http://${BACKEND_IP}:3030"
+            API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL: ${API_URL}"
+            export API_URL=${API_URL}
             echo "${API_URL}" >> "frontend/.env"
-      - run:
-          name: Deploy frontend objects
-          command: |
-            # your code here
             cd frontend
             npm install
             npm run build

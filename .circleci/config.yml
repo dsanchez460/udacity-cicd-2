@@ -38,6 +38,7 @@ commands:
               npm install
               npm run migrations:revert
             fi
+          when: on_fail
 
 orbs:
   slack: circleci/slack@4.2.0

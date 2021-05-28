@@ -214,11 +214,12 @@ jobs:
           at: ~/
       - run:
           name: Configure server
-          no_output_timeout: 15m
+          #no_output_timeout: 15m
           command: |
             # Your code here
-            cd .circleci/ansible
-            ansible-playbook -i inventory.txt configure-server.yml
+            ansible-playbook -i project/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
+#            cd .circleci/ansible
+#            ansible-playbook -i inventory.txt configure-server.yml
 
   run-migrations:
     docker:

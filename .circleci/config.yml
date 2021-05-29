@@ -330,7 +330,11 @@ jobs:
             pip install awscli
       # attach workspace
       - attach_workspace:
-          at: ~/
+          at: ./.circleci/ansible
+      - restore_cache:
+          keys: [backend-build]
+      # - attach_workspace:
+      #    at: ~/
       - run:
           name: Set env
           command: |

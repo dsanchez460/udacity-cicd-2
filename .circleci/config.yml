@@ -217,7 +217,7 @@ jobs:
           #no_output_timeout: 15m
           command: |
             # Your code here
-            ansible-playbook -i ~/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
+            ansible-playbook -i project/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
 #            cd .circleci/ansible
 #            ansible-playbook -i inventory.txt configure-server.yml
 
@@ -358,7 +358,7 @@ jobs:
             # echo "BACKEND_IP: ${BACKEND_IP}"
             pwd
             ls
-            cat ~/.circleci/ansible/inventory.txt
+            cat ~/project/.circleci/ansible/inventory.txt
             ansible-playbook -i ~/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
             # ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
             # ansible-playbook -i inventory.txt deploy-backend.yml
